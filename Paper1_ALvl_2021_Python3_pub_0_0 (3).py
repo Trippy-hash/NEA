@@ -537,7 +537,7 @@ def PlayGame(Player1, Player2, Grid):
   Commands = []
   print("Player One current state - " + Player1.GetStateString())
   print("Player Two current state - " + Player2.GetStateString())
-  while not (GameOver and Player1Turn):
+  while not (GameOver and Player1Turn): #While the game isnt over and its currently 
     print(Grid.GetGridAsString(Player1Turn))
     if Player1Turn:
       print(Player1.GetName() + " state your three commands, pressing enter after each one.")
