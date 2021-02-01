@@ -146,7 +146,7 @@ def GetScoreForWordAndPrefix(Word, TileDictionary):
   for items in range(len(AllowedWords)):
     if AllowedWords[items] in Word:
       for Count in range(len(AllowedWords[items])):
-        Score += TileDictionary[AllowedWords[items[Count]]]
+        Score += TileDictionary[AllowedWords[items][Count]]
     else:
       a = 2
   return Score
