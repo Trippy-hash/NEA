@@ -271,9 +271,12 @@ def Main():
   print("++++++++++++++++++++++++++++++++++++++")
   print()
   print()
+
+##############################################################
   StartHandSize = 100
   while StartHandSize > 20 or StartHandSize < 1:
   	StartHandSize = int(input('Enter start hand size: '))
+##############################################################
 
   AllowedWords = LoadAllowedWords()
   TileDictionary = CreateTileDictionary()
