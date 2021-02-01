@@ -134,6 +134,7 @@ def UpdateAfterAllowedWord(Word, PlayerTiles, PlayerScore, PlayerTilesPlayed, Ti
   return PlayerTiles, PlayerScore, PlayerTilesPlayed
 
 def GetScoreForWordAndPrefix(Word, TileDictionary):
+  a = 0
   Score = 0
   for Count in range(len(Word)):
     Score += TileDictionary[Word[Count]]
@@ -146,6 +147,8 @@ def GetScoreForWordAndPrefix(Word, TileDictionary):
     if AllowedWords[items] in Word:
       for Count in range(len(AllowedWords[items])):
         Score += TileDictionar[AllowedWords[items[Count]]]
+    else:
+      a = 2
   return Score
 #################################################################################################################
       
