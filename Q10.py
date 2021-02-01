@@ -62,10 +62,12 @@ def DisplayTileValues(TileDictionary, AllowedWords):
   print()
   print("TILE VALUES")
   print()
+######################################################################################################################
   AlphabetCount = CalculateFrequencies() 
   Alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
   print(','.join(Alphabet))
   print(','.join(AlphabetCount)) 
+######################################################################################################################
   for Letter, Points in TileDictionary.items():
     print("Points for " + Letter + ": " + str(Points))
   print()
@@ -293,6 +295,7 @@ def Main():
     elif Choice == "2":
       PlayGame(AllowedWords, TileDictionary, False, 15, MaxHandSize, MaxTilesPlayed, NoOfEndOfTurnTiles)
 
+###################################################################################################################################
 def CalculateFrequencies():
 	AllowedWords = LoadAllowedWords()
 	Alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
@@ -306,7 +309,7 @@ def CalculateFrequencies():
 				a = b
 		AlphabetCount[i] = count
 	return AlphabetCount
-
+###################################################################################################################################
 
      
 if __name__ == "__main__":
