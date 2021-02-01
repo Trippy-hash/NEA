@@ -297,4 +297,4 @@ def Main():
       PlayGame(AllowedWords, TileDictionary, False, 15, MaxHandSize, MaxTilesPlayed, NoOfEndOfTurnTiles)
       
 if __name__ == "__main__":
-  Main(
+  Main()
