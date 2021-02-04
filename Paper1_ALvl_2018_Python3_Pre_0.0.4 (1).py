@@ -54,6 +54,8 @@ def CreateTileDictionary():
       TileDictionary[chr(65 + Count)] = 2
     elif Count in [5, 7, 10, 21, 22, 24]:
       TileDictionary[chr(65 + Count)] = 3
+    elif Count in [9, 23]:
+      TileDictionary[chr(65 + Count)] = 4
     else:
       TileDictionary[chr(65 + Count)] = 5
   return TileDictionary
@@ -96,12 +98,25 @@ def CheckWordIsInTiles(Word, PlayerTiles):
 
 def CheckWordIsValid(Word, AllowedWords):
   ValidWord = False
-  Count = 0
-  while Count < len(AllowedWords) and not ValidWord:
-    if AllowedWords[Count] == Word:
+  start = 0
+  end = len(AllowedWords)-1
+
+  while start <= end:
+    mid = (start + end) // 2
+    
+    if AllowedWords[mid] == Word:
       ValidWord = True
-    Count += 1
+      return ValidWord
+
+    if AllowedWords[mid] < Word:
+      start = mid + 1
+    elif AllowedWords[mid] > Word:
+      end = mid - 1
+      
   return ValidWord
+
+
+
 
 def AddEndOfTurnTiles(TileQueue, PlayerTiles, NewTileChoice, Choice):
   if NewTileChoice == "1":
@@ -130,33 +145,13 @@ def GetScoreForWord(Word, TileDictionary):
   elif len(Word) > 5:
     Score += 5
   return Score
-#################################################################################################################  
+  
 def UpdateAfterAllowedWord(Word, PlayerTiles, PlayerScore, PlayerTilesPlayed, TileDictionary, AllowedWords):
   PlayerTilesPlayed += len(Word)
   for Letter in Word:
     PlayerTiles = PlayerTiles.replace(Letter, "", 1)
-  PlayerScore += GetScoreForWordAndPrefix(Word, TileDictionary)
+  PlayerScore += GetScoreForWord(Word, TileDictionary)
   return PlayerTiles, PlayerScore, PlayerTilesPlayed
-
-def GetScoreForWordAndPrefix(Word, TileDictionary):
-  a = 0
-  Score = 0
-  for Count in range(len(Word)):
-    Score += TileDictionary[Word[Count]]
-  if len(Word) > 7:
-    Score += 20
-  elif len(Word) > 5:
-    Score += 5
-  AllowedWords = LoadAllowedWords()
-  for items in range(len(AllowedWords)):
-    if AllowedWords[items] in Word:
-      for Count in range(len(AllowedWords[items])):
-        Score += TileDictionary[AllowedWords[items][Count]]
-    else:
-      a = 2
-  return Score
-#################################################################################################################  
-
       
 def UpdateScoreWithPenalty(PlayerScore, PlayerTiles, TileDictionary):
   for Count in range (len(PlayerTiles)):
