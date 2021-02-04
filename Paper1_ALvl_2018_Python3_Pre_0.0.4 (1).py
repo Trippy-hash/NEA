@@ -130,13 +130,33 @@ def GetScoreForWord(Word, TileDictionary):
   elif len(Word) > 5:
     Score += 5
   return Score
-  
+#################################################################################################################  
 def UpdateAfterAllowedWord(Word, PlayerTiles, PlayerScore, PlayerTilesPlayed, TileDictionary, AllowedWords):
   PlayerTilesPlayed += len(Word)
   for Letter in Word:
     PlayerTiles = PlayerTiles.replace(Letter, "", 1)
-  PlayerScore += GetScoreForWord(Word, TileDictionary)
+  PlayerScore += GetScoreForWordAndPrefix(Word, TileDictionary)
   return PlayerTiles, PlayerScore, PlayerTilesPlayed
+
+def GetScoreForWordAndPrefix(Word, TileDictionary):
+  a = 0
+  Score = 0
+  for Count in range(len(Word)):
+    Score += TileDictionary[Word[Count]]
+  if len(Word) > 7:
+    Score += 20
+  elif len(Word) > 5:
+    Score += 5
+  AllowedWords = LoadAllowedWords()
+  for items in range(len(AllowedWords)):
+    if AllowedWords[items] in Word:
+      for Count in range(len(AllowedWords[items])):
+        Score += TileDictionary[AllowedWords[items][Count]]
+    else:
+      a = 2
+  return Score
+#################################################################################################################  
+
       
 def UpdateScoreWithPenalty(PlayerScore, PlayerTiles, TileDictionary):
   for Count in range (len(PlayerTiles)):
