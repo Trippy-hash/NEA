@@ -288,8 +288,10 @@ def Main():
   print()
   print()
   StartHandSize = 100
+  ##############################################################
   While StartHandSize > 20 or StartHandSize < 1:
     StartHandSize = int(input('Enter start hand size: '))
+  ##############################################################
   AllowedWords = LoadAllowedWords()
   TileDictionary = CreateTileDictionary()
   MaxHandSize = 20
