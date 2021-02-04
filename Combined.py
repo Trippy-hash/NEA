@@ -1,66 +1,310 @@
-6.1) State the name of an identifier for a built-in function used in the Skeleton Program that has a string parameter and returns an integer value.
-                              
-DisplayTileValues 
+# Skeleton Program code for the AQA A Level Paper 1 2018 examination
+# this code should be used in conjunction with the Preliminary Material
+# written by the AQA Programmer Team
+# developed using Python 3.5.1
 
-6.2) State the name of an identifier for a local variable in a method in the
-QueueOfTiles class.
+import random
 
-MaxSize 
- 
-[1 mark]
-[1 mark]
- 
+class QueueOfTiles():
+  def __init__(self, MaxSize):
+    self._Contents = []
+    self._Rear = -1
+    self._MaxSize = MaxSize
+    for Count in range(self._MaxSize):
+      self._Contents.append("")
+      self.Add()
+      
+  def IsEmpty(self):
+    if self._Rear == -1:
+      return True
+    else:
+      return False
 
+  def Remove(self):
+    if self.IsEmpty():
+      return None
+    else:
+      Item = self._Contents[0]
+      for Count in range (1, self._Rear + 1):
+        self._Contents[Count - 1] = self._Contents[Count]
+      self._Contents[self._Rear] = ""
+      self._Rear -= 1
+      return Item
 
-6.3) The QueueOfTiles class implements a linear queue. A circular queue could have been used instead.
+  def Add(self):
+    if self._Rear < self._MaxSize - 1:
+      RandNo = random.randint(0, 25)
+      self._Rear += 1
+      self._Contents[self._Rear] = chr(65 + RandNo)
 
-Explain why a circular queue is often a better choice of data structure than a linear queue.
+  def Show(self):
+    if self._Rear != -1:
+      print()
+      print("The contents of the queue are: ", end="")
+      for Item in self._Contents:
+        print(Item, end="")
+      print()
 
-A circular queue is better because it takes up less memory and items can be inserted from where previous ones were deleted  
-[2 marks]
+def CreateTileDictionary():
+  TileDictionary = dict()
+  for Count in range(26):
+    if Count in [0, 4, 8, 13, 14, 17, 18, 19]:
+      TileDictionary[chr(65 + Count)] = 1
+    elif Count in [1, 2, 3, 6, 11, 12, 15, 20]:
+      TileDictionary[chr(65 + Count)] = 2
+    elif Count in [5, 7, 10, 21, 22, 24]:
+      TileDictionary[chr(65 + Count)] = 3
+    else:
+      TileDictionary[chr(65 + Count)] = 5
+  return TileDictionary
+    
+def DisplayTileValues(TileDictionary, AllowedWords):
+  print()
+  print("TILE VALUES")
+  print()  
+  for Letter, Points in TileDictionary.items():
+    print("Points for " + Letter + ": " + str(Points))
+  print()
 
+def GetStartingHand(TileQueue, StartHandSize):
+  Hand = ""
+  for Count in range(StartHandSize):
+    Hand += TileQueue.Remove()
+    TileQueue.Add()
+  return Hand
 
-0	6	.	4)	It could be argued that the algorithms for a linear queue lead to simpler program code.
+def LoadAllowedWords():
+  AllowedWords = []
+  try:
+    WordsFile = open("aqawords.txt", "r")
+    for Word in WordsFile:
+      AllowedWords.append(Word.strip().upper())
+    WordsFile.close()
+  except:
+    pass
+  return AllowedWords
 
-State one other reason why a linear queue is an appropriate choice in the Skeleton Program even though circular queues are normally a better choice.
-			Uses arrays, those are static, cannot reuse a space in data stuctures. 
-	[1 mark]
+def CheckWordIsInTiles(Word, PlayerTiles):
+  InTiles = True
+  CopyOfTiles = PlayerTiles
+  for Count in range(len(Word)):
+    if Word[Count] in CopyOfTiles:
+      CopyOfTiles = CopyOfTiles.replace(Word[Count], "", 1)
+    else:
+      InTiles = False
+  return InTiles 
 
+def CheckWordIsValid(Word, AllowedWords):
+  ValidWord = False
+  Count = 0
+  while Count < len(AllowedWords) and not ValidWord:
+    if AllowedWords[Count] == Word:
+      ValidWord = True
+    Count += 1
+  return ValidWord
+
+def AddEndOfTurnTiles(TileQueue, PlayerTiles, NewTileChoice, Choice):
+  if NewTileChoice == "1":
+    NoOfEndOfTurnTiles = len(Choice)
+  elif NewTileChoice == "2":
+    NoOfEndOfTurnTiles = 3    
+  else:
+    NoOfEndOfTurnTiles = len(Choice) + 3
+  for Count in range(NoOfEndOfTurnTiles):
+    PlayerTiles += TileQueue.Remove()
+    TileQueue.Add()
+  return TileQueue, PlayerTiles  
+
+def FillHandWithTiles(TileQueue, PlayerTiles, MaxHandSize):
+  while len(PlayerTiles) <= MaxHandSize:
+    PlayerTiles += TileQueue.Remove()
+    TileQueue.Add()
+  return TileQueue, PlayerTiles  
+
+def GetScoreForWord(Word, TileDictionary):
+  Score = 0
+  for Count in range (len(Word)):
+    Score += TileDictionary[Word[Count]]
+  if len(Word) > 7:
+    Score += 20
+  elif len(Word) > 5:
+    Score += 5
+  return Score
+#################################################################################################################  
+def UpdateAfterAllowedWord(Word, PlayerTiles, PlayerScore, PlayerTilesPlayed, TileDictionary, AllowedWords):
+  PlayerTilesPlayed += len(Word)
+  for Letter in Word:
+    PlayerTiles = PlayerTiles.replace(Letter, "", 1)
+  PlayerScore += GetScoreForWordAndPrefix(Word, TileDictionary)
+  return PlayerTiles, PlayerScore, PlayerTilesPlayed
+
+def GetScoreForWordAndPrefix(Word, TileDictionary):
+  a = 0
+  Score = 0
+  for Count in range(len(Word)):
+    Score += TileDictionary[Word[Count]]
+  if len(Word) > 7:
+    Score += 20
+  elif len(Word) > 5:
+    Score += 5
+  AllowedWords = LoadAllowedWords()
+  for items in range(len(AllowedWords)):
+    if AllowedWords[items] in Word:
+      for Count in range(len(AllowedWords[items])):
+        Score += TileDictionary[AllowedWords[items][Count]]
+    else:
+      a = 2
+  return Score
+#################################################################################################################  
+
+      
+def UpdateScoreWithPenalty(PlayerScore, PlayerTiles, TileDictionary):
+  for Count in range (len(PlayerTiles)):
+    PlayerScore -= TileDictionary[PlayerTiles[Count]]  
+  return PlayerScore
+
+def GetChoice():
+  print()
+  print("Either:")
+  print("     enter the word you would like to play OR")
+  print("     press 1 to display the letter values OR")
+  print("     press 4 to view the tile queue OR")
+  print("     press 7 to view your tiles again OR")
+  print("     press 0 to fill hand and stop the game.")
+  Choice = input(">")
+  print()
+  Choice = Choice.upper()
+  return Choice
+
+def GetNewTileChoice():
+  NewTileChoice = ""
+  while NewTileChoice not in ["1", "2", "3", "4"]:
+    print("Do you want to:")
+    print("     replace the tiles you used (1) OR")
+    print("     get three extra tiles (2) OR")
+    print("     replace the tiles you used and get three extra tiles (3) OR")
+    print("     get no new tiles (4)?")
+    NewTileChoice = input(">")
+  return NewTileChoice
+
+def DisplayTilesInHand(PlayerTiles):
+  print()
+  print("Your current hand:", PlayerTiles)
   
+def HaveTurn(PlayerName, PlayerTiles, PlayerTilesPlayed, PlayerScore, TileDictionary, TileQueue, AllowedWords, MaxHandSize, NoOfEndOfTurnTiles):
+  print()
+  print(PlayerName, "it is your turn.")
+  DisplayTilesInHand(PlayerTiles)
+  NewTileChoice = "2"
+  ValidChoice = False
+  while not ValidChoice:
+    Choice = GetChoice()
+    if Choice == "1":
+      DisplayTileValues(TileDictionary, AllowedWords)
+    elif Choice == "4":
+      TileQueue.Show()
+    elif Choice == "7":
+      DisplayTilesInHand(PlayerTiles)      
+    elif Choice == "0":
+      ValidChoice = True
+      TileQueue, PlayerTiles = FillHandWithTiles(TileQueue, PlayerTiles, MaxHandSize)
+    else:
+      ValidChoice = True
+      if len(Choice) == 0:
+        ValidWord = False
+      else:
+        ValidWord = CheckWordIsInTiles(Choice, PlayerTiles)
+      if ValidWord:
+        ValidWord = CheckWordIsValid(Choice, AllowedWords)
+        if ValidWord:
+          print()
+          print("Valid word")
+          print()
+          PlayerTiles, PlayerScore, PlayerTilesPlayed = UpdateAfterAllowedWord(Choice, PlayerTiles, PlayerScore, PlayerTilesPlayed, TileDictionary, AllowedWords)
+          NewTileChoice = GetNewTileChoice()
+      if not ValidWord:
+        print()
+        print("Not a valid attempt, you lose your turn.")
+        print()
+      if NewTileChoice != "4":
+        TileQueue, PlayerTiles = AddEndOfTurnTiles(TileQueue, PlayerTiles, NewTileChoice, Choice)
+      print()
+      print("Your word was:", Choice)
+      print("Your new score is:", PlayerScore)
+      print("You have played", PlayerTilesPlayed, "tiles so far in this game.")
+  return PlayerTiles, PlayerTilesPlayed, PlayerScore, TileQueue  
 
-0 6	.	5)	State one additional attribute that must be added to the QueueOfTiles class if
-		it were to be implemented as a circular queue instead of as a linear queue.
+def DisplayWinner(PlayerOneScore, PlayerTwoScore):
+  print()
+  print("**** GAME OVER! ****")
+  print()
+  print("Player One your score is", PlayerOneScore)
+  print("Player Two your score is", PlayerTwoScore)
+  if PlayerOneScore > PlayerTwoScore:
+    print("Player One wins!")
+  elif PlayerTwoScore > PlayerOneScore:
+    print("Player Two wins!")
+  else:
+    print("It is a draw!")
+  print()
+  
+def PlayGame(AllowedWords, TileDictionary, RandomStart, StartHandSize, MaxHandSize, MaxTilesPlayed, NoOfEndOfTurnTiles):
+  PlayerOneScore = 50
+  PlayerTwoScore = 50
+  PlayerOneTilesPlayed = 0
+  PlayerTwoTilesPlayed = 0
+  TileQueue = QueueOfTiles(20)
+  if RandomStart:
+    PlayerOneTiles = GetStartingHand(TileQueue, StartHandSize)
+    PlayerTwoTiles = GetStartingHand(TileQueue, StartHandSize)
+  else:
+    PlayerOneTiles = "BTAHANDENONSARJ"
+    PlayerTwoTiles = "CELZXIOTNESMUAA"
+  while PlayerOneTilesPlayed <= MaxTilesPlayed and PlayerTwoTilesPlayed <= MaxTilesPlayed and len(PlayerOneTiles) < MaxHandSize and len(PlayerTwoTiles) < MaxHandSize:
+    PlayerOneTiles, PlayerOneTilesPlayed, PlayerOneScore, TileQueue = HaveTurn("Player One", PlayerOneTiles, PlayerOneTilesPlayed, PlayerOneScore, TileDictionary, TileQueue, AllowedWords, MaxHandSize, NoOfEndOfTurnTiles)
+    print()
+    input("Press Enter to continue")
+    print()
+    PlayerTwoTiles, PlayerTwoTilesPlayed, PlayerTwoScore, TileQueue = HaveTurn("Player Two", PlayerTwoTiles, PlayerTwoTilesPlayed, PlayerTwoScore, TileDictionary, TileQueue, AllowedWords, MaxHandSize, NoOfEndOfTurnTiles)
+  PlayerOneScore = UpdateScoreWithPenalty(PlayerOneScore, PlayerOneTiles, TileDictionary)
+  PlayerTwoScore = UpdateScoreWithPenalty(PlayerTwoScore, PlayerTwoTiles, TileDictionary)
+  DisplayWinner(PlayerOneScore, PlayerTwoScore)
 
-[1 mark]
-
-
-0	6	.	6)	
-Describe the changes that would need to be made to the Skeleton Program so
-that the probability of a player getting a one point tile is the same as the
-probability of them getting a tile worth more than one point. The changes you
-describe should not result in any changes being made to the points value of any
-tile.
-
-The generation of the tiles happens in a function called CreateTileDictionary. 
-It chooses the predefined letters from the alphabet. You have a 8 / 26 letters 
-to get a letter worth one point, 8/26 letters to get a tile worth 2 points,
-6 / 26 letters  giving a tile worth three point and 5 / 26 letters will give you 5 points. 
-If we try to make all probability equal you cannot split 26 four ways so instead you
-must use a list of the alphabet and randomize its designation of points. 
-As long as there are 13, 1 point letters then there is a equal chance of one and the other. 
-
-
-[4 marks]
- 
-
-6.7) The GetChoice subroutine uses a built-in function to convert a string to uppercase.
-
-Describe how a string consisting of lowercase characters could be converted to uppercase using only one iterative structure if the programming language being used does not have a built-in function that can do this conversion.
-You may assume that only lowercase characters are entered by the user. You should not change the Skeleton Program when answering this question.
-
-I would recommend taking advantage of dictionary’s in this situation, 
-it allows to easily set a value and a key which can be ‘Lowercase’: ‘Uppercase’. 
-Once the dictionary has been built then take the users input using the input 
-function and it .get() of the dictionary and use the input (which will be a letter) 
-and have it looked up In the dictionary and then print the output. 
+def DisplayMenu():
+  print()
+  print("=========")
+  print("MAIN MENU")
+  print("=========")
+  print()
+  print("1. Play game with random start hand")
+  print("2. Play game with training start hand")
+  print("9. Quit")
+  print()
+  
+def Main():
+  print("++++++++++++++++++++++++++++++++++++++")
+  print("+ Welcome to the WORDS WITH AQA game +")
+  print("++++++++++++++++++++++++++++++++++++++")
+  print()
+  print()
+  StartHandSize = 100
+  While StartHandSize > 20 or StartHandSize < 1:
+    StartHandSize = int(input('Enter start hand size: '))
+  AllowedWords = LoadAllowedWords()
+  TileDictionary = CreateTileDictionary()
+  MaxHandSize = 20
+  MaxTilesPlayed = 50
+  NoOfEndOfTurnTiles = 3
+  #StartHandSize = 15
+  Choice = ""
+  while Choice != "9":
+    DisplayMenu()
+    Choice = input("Enter your choice: ")
+    if Choice == "1":
+      PlayGame(AllowedWords, TileDictionary, True, StartHandSize, MaxHandSize, MaxTilesPlayed, NoOfEndOfTurnTiles)
+    elif Choice == "2":
+      PlayGame(AllowedWords, TileDictionary, False, 15, MaxHandSize, MaxTilesPlayed, NoOfEndOfTurnTiles)
+      
+if __name__ == "__main__":
+  Main()
 
