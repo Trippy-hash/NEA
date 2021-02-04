@@ -289,7 +289,7 @@ def Main():
   print()
   StartHandSize = 100
   ##############################################################
-  While StartHandSize > 20 or StartHandSize < 1:
+  while StartHandSize > 20 or StartHandSize < 1:
     StartHandSize = int(input('Enter start hand size: '))
   ##############################################################
   AllowedWords = LoadAllowedWords()
