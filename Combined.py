@@ -310,3 +310,86 @@ def Main():
 if __name__ == "__main__":
   Main()
 
+
+  
+  
+  
+  
+  
+  
+
+  
+  
+#################################################################
+#Q7
+
+def CreateTileDictionary():
+  TileDictionary = dict()
+  for Count in range(26):
+    if Count in [0, 4, 8, 13, 14, 17, 18, 19]:
+      TileDictionary[chr(65 + Count)] = 1
+    elif Count in [1, 2, 3, 6, 11, 12, 15, 20]:
+      TileDictionary[chr(65 + Count)] = 2
+    elif Count in [5, 7, 10, 21, 22, 24]:
+      TileDictionary[chr(65 + Count)] = 3
+    elif Count in [9, 23]:
+      TileDictionary[chr(65 + Count)] = 4
+    else:
+      TileDictionary[chr(65 + Count)] = 5
+  return TileDictionary
+
+#9
+
+def CheckWordIsValid(Word, AllowedWords):
+  ValidWord = False
+  start = 0
+  end = len(AllowedWords)-1
+
+  while start <= end:
+    mid = (start + end) // 2
+    
+    if AllowedWords[mid] == Word:
+      ValidWord = True
+      return ValidWord
+
+    if AllowedWords[mid] < Word:
+      start = mid + 1
+    elif AllowedWords[mid] > Word:
+      end = mid - 1
+      
+  return ValidWord
+
+#Q10
+
+def DisplayTileValues(TileDictionary, AllowedWords):
+  print()
+  print("TILE FREQUENCY")
+  print()
+  AlphabetCount = CalculateFrequencies() 
+  Alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+  for i in range(len(Alphabet)):
+      print(str(Alphabet[i]) + " --> " + str(AlphabetCount[i]))
+  print()
+  print("TILE VALUES")
+  print()
+  for Letter, Points in TileDictionary.items():
+    print("Points for " + Letter + ": " + str(Points))
+  print()
+
+  
+  
+def CalculateFrequencies():
+  AllowedWords = LoadAllowedWords()
+  Alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+  AlphabetCount = ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0']
+
+  for i in range(len(Alphabet)):
+    count = 0
+    for k in range(len(AllowedWords)):
+      for x in range(len(AllowedWords[k])):
+        if Alphabet[i] == AllowedWords[k][x]:
+          count +=1
+    AlphabetCount[i] = count
+      
+  return AlphabetCount
+
